@@ -77,8 +77,8 @@ EOF
   route_count=$((route_count + 1))
 done
 
-if [ "$route_count" -eq 0 ]; then
-  echo "[entrypoint] No routes configured. Set at least one PROXY_ROUTE_1..PROXY_ROUTE_5" >&2
+if [ "$route_count" -eq 0 ] && [ -z "$DEFAULT_UPSTREAM" ]; then
+  echo "[entrypoint] No upstream configured. Set DEFAULT_UPSTREAM or at least one PROXY_ROUTE_1..PROXY_ROUTE_5" >&2
   exit 1
 fi
 

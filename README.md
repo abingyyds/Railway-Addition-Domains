@@ -16,23 +16,24 @@ Each service/container on Railway only supports 1 public railway domain (xxx.up.
 
 ## Environment variables
 ### Required
-Set at least one of:
-- `PROXY_ROUTE_1`
-- `PROXY_ROUTE_2`
-- `PROXY_ROUTE_3`
-- `PROXY_ROUTE_4`
-- `PROXY_ROUTE_5`
+Set at least one upstream:
+- `DEFAULT_UPSTREAM`, or
+- at least one of `PROXY_ROUTE_1` ... `PROXY_ROUTE_5`
 
-Each route must be in this format:
+`DEFAULT_UPSTREAM` format:
+- `scheme://host:port`
+
+`PROXY_ROUTE_x` format:
 - `domain=scheme://host:port`
 
 Examples:
+- `DEFAULT_UPSTREAM=http://192.168.1.10:3000`
 - `PROXY_ROUTE_1=app.example.com=http://192.168.1.10:3000`
 - `PROXY_ROUTE_2=admin.example.com=http://192.168.1.11:8080`
 
 ### Optional
 - `CLIENT_MAX_BODY_SIZE` (default: `5G`)
-- `DEFAULT_UPSTREAM` fallback when host doesn't match any route (format: `scheme://host:port`)
+- `DEFAULT_UPSTREAM` acts as the default route when host doesn't match any `PROXY_ROUTE_x`
 
 ## Build
 ```bash
@@ -42,6 +43,16 @@ docker build -t railway-addition-domains .
 ## Run
 ```bash
 docker run --rm -p 8080:8080 \
+  -e DEFAULT_UPSTREAM=http://192.168.1.10:3000 \
+  -e CLIENT_MAX_BODY_SIZE=5G \
+  railway-addition-domains
+```
+
+With additional host-based routes:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e DEFAULT_UPSTREAM=http://192.168.1.10:3000 \
   -e PROXY_ROUTE_1=app.example.com=http://192.168.1.10:3000 \
   -e PROXY_ROUTE_2=admin.example.com=http://192.168.1.11:8080 \
   -e CLIENT_MAX_BODY_SIZE=5G \
