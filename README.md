@@ -6,6 +6,8 @@ Minimal Nginx reverse proxy container for Railway/custom domains.
 
 Each service/container on Railway only supports 1 public railway domain (xxx.up.railway.app). This one gets you another, by using reserve proxy
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/5ARPkB?referralCode=kmHOLH&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 ## Features
 - Exposes on **8080**
 - Supports up to **5 host-based routes** via env vars (`PROXY_ROUTE_1` ... `PROXY_ROUTE_5`)
