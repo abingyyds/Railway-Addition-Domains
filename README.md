@@ -14,7 +14,8 @@ Each service/container on Railway only supports 1 public railway domain (xxx.up.
 - Enables Alpine private networking support for Railway
 - Resolves `.railway.internal` upstreams at request time through Railway private DNS
 - Supports up to **5 host-based routes** via env vars (`PROXY_ROUTE_1` ... `PROXY_ROUTE_5`)
-- Adds Subrouter-friendly reverse-proxy headers, including HTTPS-aware `X-Forwarded-Proto`
+- Adds Subrouter-friendly reverse-proxy headers, preserving the original public host for distributor/custom-domain routing
+- Forces external scheme headers to HTTPS by default to avoid redirect loops behind Railway's internal HTTP hop
 - Supports large uploads (default **5G**, configurable via env)
 
 ## Environment variables

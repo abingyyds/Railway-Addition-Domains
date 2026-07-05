@@ -19,16 +19,6 @@ map \$http_upgrade \$connection_upgrade {
     ''      close;
 }
 
-map \$http_x_forwarded_proto \$proxy_x_forwarded_proto {
-    default \$http_x_forwarded_proto;
-    ''      ${FORWARDED_PROTO};
-}
-
-map \$http_x_forwarded_port \$proxy_x_forwarded_port {
-    default \$http_x_forwarded_port;
-    ''      ${FORWARDED_PORT};
-}
-
 resolver [fd12::10] ipv6=on valid=10s;
 resolver_timeout 5s;
 EOF
@@ -36,7 +26,8 @@ EOF
 cat <<EOF
 [entrypoint] listen port: ${LISTEN_PORT}
 [entrypoint] default upstream: ${DEFAULT_UPSTREAM}
-[entrypoint] fallback forwarded proto: ${FORWARDED_PROTO}
+[entrypoint] forwarded proto: ${FORWARDED_PROTO}
+[entrypoint] forwarded port: ${FORWARDED_PORT}
 EOF
 
 route_count=0
@@ -87,15 +78,19 @@ server {
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto ${FORWARDED_PROTO};
+        proxy_set_header X-Forwarded-Scheme ${FORWARDED_PROTO};
+        proxy_set_header X-Forwarded-Ssl on;
         proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$proxy_x_forwarded_port;
+        proxy_set_header X-Forwarded-Port ${FORWARDED_PORT};
         proxy_set_header X-Original-Host \$host;
+        proxy_set_header Forwarded "proto=${FORWARDED_PROTO};host=\$host";
         proxy_set_header X-Request-Id \$request_id;
 
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection \$connection_upgrade;
 
+        proxy_redirect off;
         proxy_buffering off;
     }
 }
@@ -127,15 +122,19 @@ server {
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto ${FORWARDED_PROTO};
+        proxy_set_header X-Forwarded-Scheme ${FORWARDED_PROTO};
+        proxy_set_header X-Forwarded-Ssl on;
         proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$proxy_x_forwarded_port;
+        proxy_set_header X-Forwarded-Port ${FORWARDED_PORT};
         proxy_set_header X-Original-Host \$host;
+        proxy_set_header Forwarded "proto=${FORWARDED_PROTO};host=\$host";
         proxy_set_header X-Request-Id \$request_id;
 
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection \$connection_upgrade;
 
+        proxy_redirect off;
         proxy_buffering off;
     }
 }
