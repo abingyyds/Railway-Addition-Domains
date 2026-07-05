@@ -13,6 +13,9 @@ map $http_x_forwarded_port $proxy_x_forwarded_port {
     ''      ${FORWARDED_PORT};
 }
 
+resolver [fd12::10] ipv6=on valid=10s;
+resolver_timeout 5s;
+
 server {
     listen ${PORT};
     server_name _;
@@ -27,8 +30,9 @@ server {
     send_timeout 600s;
 
     location / {
+        set $proxy_upstream "${UPSTREAM_SCHEME}://${UPSTREAM_HOST}:${UPSTREAM_PORT}";
         proxy_http_version 1.1;
-        proxy_pass ${UPSTREAM_SCHEME}://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+        proxy_pass $proxy_upstream;
         proxy_ssl_server_name on;
 
         # Common reverse-proxy headers

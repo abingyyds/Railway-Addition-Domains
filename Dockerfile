@@ -3,6 +3,7 @@ FROM nginx:1.27-alpine
 RUN apk add --no-cache bash
 
 ENV PORT=8080
+ENV ENABLE_ALPINE_PRIVATE_NETWORKING=true
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 

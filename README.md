@@ -11,6 +11,8 @@ Each service/container on Railway only supports 1 public railway domain (xxx.up.
 ## Features
 - Exposes on **8080** by default (`PORT` can override it)
 - Defaults to Subrouter on Railway private networking: `http://subrouter.railway.internal:3000`
+- Enables Alpine private networking support for Railway
+- Resolves `.railway.internal` upstreams at request time through Railway private DNS
 - Supports up to **5 host-based routes** via env vars (`PROXY_ROUTE_1` ... `PROXY_ROUTE_5`)
 - Adds Subrouter-friendly reverse-proxy headers, including HTTPS-aware `X-Forwarded-Proto`
 - Supports large uploads (default **5G**, configurable via env)
@@ -44,6 +46,7 @@ Examples:
 - `FORWARDED_PROTO` (default: `https`)
 - `FORWARDED_PORT` (default: `443`)
 - `SUBROUTER_UPSTREAM` (default: `http://subrouter.railway.internal:3000`)
+- `ENABLE_ALPINE_PRIVATE_NETWORKING` (default: `true` in the image)
 - `DEFAULT_UPSTREAM` acts as the default route when host doesn't match any `PROXY_ROUTE_x`
 
 ### Railway + Subrouter recommended variables
@@ -56,6 +59,7 @@ PORT=8080
 SUBROUTER_UPSTREAM=http://subrouter.railway.internal:3000
 FORWARDED_PROTO=https
 FORWARDED_PORT=443
+ENABLE_ALPINE_PRIVATE_NETWORKING=true
 ```
 
 ## Build

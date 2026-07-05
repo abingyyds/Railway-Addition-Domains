@@ -28,6 +28,9 @@ map \$http_x_forwarded_port \$proxy_x_forwarded_port {
     default \$http_x_forwarded_port;
     ''      ${FORWARDED_PORT};
 }
+
+resolver [fd12::10] ipv6=on valid=10s;
+resolver_timeout 5s;
 EOF
 
 cat <<EOF
@@ -76,8 +79,9 @@ server {
     send_timeout 600s;
 
     location / {
+        set \$proxy_upstream "$upstream";
         proxy_http_version 1.1;
-        proxy_pass $upstream;
+        proxy_pass \$proxy_upstream;
         proxy_ssl_server_name on;
 
         proxy_set_header Host \$host;
@@ -115,8 +119,9 @@ server {
     client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
     location / {
+        set \$proxy_upstream "$DEFAULT_UPSTREAM";
         proxy_http_version 1.1;
-        proxy_pass $DEFAULT_UPSTREAM;
+        proxy_pass \$proxy_upstream;
         proxy_ssl_server_name on;
 
         proxy_set_header Host \$host;
