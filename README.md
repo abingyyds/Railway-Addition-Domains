@@ -13,6 +13,7 @@ Each service/container on Railway only supports 1 public railway domain (xxx.up.
 - Defaults to Subrouter on Railway private networking: `http://subrouter.railway.internal:3000`
 - Enables Alpine private networking support for Railway
 - Resolves `.railway.internal` upstreams at request time through Railway private DNS
+- Auto-detects the first reachable Subrouter upstream port from `SUBROUTER_PORTS`
 - Supports up to **5 host-based routes** via env vars (`PROXY_ROUTE_1` ... `PROXY_ROUTE_5`)
 - Adds Subrouter-friendly reverse-proxy headers, preserving the original public host for distributor/custom-domain routing
 - Forces external scheme headers to HTTPS by default to avoid redirect loops behind Railway's internal HTTP hop
@@ -28,6 +29,7 @@ http://subrouter.railway.internal:3000
 
 You can override this with either:
 - `SUBROUTER_UPSTREAM`
+- `SUBROUTER_HOST` + `SUBROUTER_PORTS`
 - `DEFAULT_UPSTREAM`
 
 `DEFAULT_UPSTREAM` format:
@@ -46,6 +48,10 @@ Examples:
 - `CLIENT_MAX_BODY_SIZE` (default: `5G`)
 - `FORWARDED_PROTO` (default: `https`)
 - `FORWARDED_PORT` (default: `443`)
+- `SUBROUTER_HOST` (default: `subrouter.railway.internal`)
+- `SUBROUTER_PORTS` (default: `3000,8080,8000,5000,80`)
+- `SUBROUTER_PROBE_TIMEOUT` (default: `2`)
+- `UPSTREAM_AUTO_DETECT` (default: `true`)
 - `SUBROUTER_UPSTREAM` (default: `http://subrouter.railway.internal:3000`)
 - `ENABLE_ALPINE_PRIVATE_NETWORKING` (default: `true` in the image)
 - `DEFAULT_UPSTREAM` acts as the default route when host doesn't match any `PROXY_ROUTE_x`
@@ -57,11 +63,16 @@ setting `DEFAULT_UPSTREAM`. These defaults are enough:
 
 ```env
 PORT=8080
-SUBROUTER_UPSTREAM=http://subrouter.railway.internal:3000
+SUBROUTER_HOST=subrouter.railway.internal
+SUBROUTER_PORTS=3000,8080,8000,5000,80
 FORWARDED_PROTO=https
 FORWARDED_PORT=443
 ENABLE_ALPINE_PRIVATE_NETWORKING=true
 ```
+
+You do not need to change the main Subrouter service just for this proxy. If
+your main Subrouter listens on a custom Railway port, add that port to
+`SUBROUTER_PORTS` in this proxy service and redeploy it.
 
 ## Build
 ```bash
