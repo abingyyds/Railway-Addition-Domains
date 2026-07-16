@@ -176,6 +176,11 @@ server {
 
     client_max_body_size ${CLIENT_MAX_BODY_SIZE};
 
+    proxy_connect_timeout 60s;
+    proxy_send_timeout 600s;
+    proxy_read_timeout 600s;
+    send_timeout 600s;
+
     location / {
         set \$proxy_upstream "$DEFAULT_UPSTREAM";
         proxy_http_version 1.1;
